@@ -1,0 +1,50 @@
+const Discord = require('discord.js');
+const db = require('quick.db')
+
+exports.run = async (client, message, args, config) => {
+  let kullanıcı = await db.fetch(`gold_${message.author.id}`);
+
+  if( kullanıcı == undefined){
+message.reply("**Maalesef bu komutu kullanamazsın gold üye değilsin :(**")
+  }else{
+      if( kullanıcı == "gold"){
+      }
+  if (!message.member.hasPermission("ADMINISTRATOR")) return message.channel.send('Bu komutu kullanabilmek için `Yönetici` yetkisine sahip olmalısın!')
+if (message.channel.type !== "text") return;
+const limit = args[0] ? args[0] : 0;
+  if(!limit) {
+              var embed = new Discord.RichEmbed()
+                .setDescription(`Doğru kullanım: \`!yavaş-mod [0/60]\``)
+                .setColor('RANDOM')
+                .setTimestamp()
+            message.channel.send({embed})
+            return
+          }
+if (limit > 60) {
+    return message.channel.sendEmbed(new Discord.RichEmbed().setDescription("Süre limiti maksimum **60** saniye olabilir.").setColor('RANDOM'));
+}
+    message.channel.sendEmbed(new Discord.RichEmbed().setDescription(`Yazma süre limiti **${limit}** saniye olarak ayarlanmıştır.`).setColor('RANDOM'));
+var request = require('request');
+request({
+    url: `https://discordapp.com/api/v7/channels/${message.channel.id}`,
+    method: "PATCH",
+    json: {
+        rate_limit_per_user: limit
+    },
+    headers: {
+        "Authorization": `Bot ${client.token}`
+    },
+})};
+      }
+  exports.conf = {
+  enabled: true,
+  guildOnly: false,
+  aliases: ["slow-mode", "slowmode", "yavas-mod", 'yavasmod', 'yavaşmod'],
+  permLevel: 3,
+};
+
+exports.help = {
+  name: 'yavaş-mod',
+  description: 'Sohbete yazma sınır (süre) ekler.',
+  usage: 'yavaş-mod [1/10]',
+};
